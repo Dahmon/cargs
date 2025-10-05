@@ -1,16 +1,17 @@
 #include "args.h"
+#include <_string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 
 int main(int argc, char *argv[]) {
   int print = 1, count = 0, dry = 0;
-  // Immutable pointer to a mutable string
   const char *save = NULL;
 
   arg_opt opts[] = {
     { BOOLEAN, 'p', NULL, &print, 0 },
-    { STRING, 's', "save", &save, 0 },
+    { STRING, 's', "save", &save, 1 },
     { INT, 'c', "count", &count, 1 },
     { BOOLEAN, '\0', "dry-run", &dry, 0 },
     { END, '\0', NULL, NULL, 0 }
@@ -22,9 +23,62 @@ int main(int argc, char *argv[]) {
          dry, save);
 }
 
-
 int is_alpha(char c) {
   return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+}
+
+int is_opt(char *arg) {
+  return arg[0] == '-' || arg[0] == '-' || arg[1] == '-';
+}
+
+void get_value(args *args, arg_opt *opt) {
+  if (opt->value == NULL) return;
+
+  int has_val = args->pos + 1 < args->argc;
+
+  if (opt->type == BOOLEAN && !has_val && !opt->value_required) {
+    *(int *)opt->value = 1;
+    return;
+  }
+
+  if (opt->value_required && (!has_val || is_opt(args->argv[args->pos + 1]))) {
+    printf("Missing required value for option: %s\n", args->argv[args->pos]);
+    return;
+  }
+
+  if (!has_val) return;
+
+  char *val = args->argv[args->pos + 1];
+  char c = val[0];
+  int len = strlen(val);
+
+  if (has_val) {
+    switch (opt->type) {
+      case STRING:
+        *(char **)opt->value = val;
+        break;
+      case INT:
+        *(int *)opt->value = atoi(val);
+        break;
+      case BOOLEAN:
+        if (len > 1) {
+          printf("boolean value is too long: %s\n", val);
+          return;
+        }
+        if (c == '1' || c == 'y' || c == 'Y')
+          *(int *)opt->value = 1;
+        else if (c == '0' || c == 'n' || c == 'N')
+          *(int *)opt->value = 0;
+        else {
+          printf("invalid boolean value: %s\n", val);
+          return;
+        }
+      default:
+        break;
+    }
+
+    args->pos++;
+  }
 }
 
 void parse_short_opt(args *args, arg_opt *opts) {
@@ -41,12 +95,8 @@ void parse_short_opt(args *args, arg_opt *opts) {
     opts++;
   }
 
-  if (arg_opt == NULL || arg_opt) {
-    printf("invalid short opt: %s\n", arg);
-    return;
-  }
-
-  printf("valid short opt: %s\n", arg);
+  if (arg_opt == NULL) return;
+  get_value(args, arg_opt);
 }
 
 void parse_long_opt(args *args, arg_opt *opts) {
@@ -63,12 +113,8 @@ void parse_long_opt(args *args, arg_opt *opts) {
     opts++;
   }
 
-  if (arg_opt == NULL) {
-    printf("invalid long opt: %s\n", arg);
-    return;
-  }
-
-  printf("valid long opt: %s\n", arg);
+  if (arg_opt == NULL) return;
+  get_value(args, arg_opt);
 }
 
 int parse_args(int argc, char *argv[], arg_opt *opts) {
