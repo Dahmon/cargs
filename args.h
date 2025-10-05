@@ -2,10 +2,18 @@
 #define C_ARGS_H
 
 typedef enum {
+  END,
   BOOLEAN,
   STRING,
   INT,
 } opt_type;
+
+typedef struct {
+  int pos;
+  int argc;
+  char **argv;
+  // Success/Error info
+} args;
 
 typedef struct {
   opt_type type;
