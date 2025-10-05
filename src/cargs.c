@@ -1,27 +1,8 @@
-#include "args.h"
+#include "../include/cargs.h"
 #include <_string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-
-int main(int argc, char *argv[]) {
-  int print = 1, count = 0, dry = 0;
-  const char *save = NULL;
-
-  arg_opt opts[] = {
-    { BOOLEAN, 'p', NULL, &print, 0 },
-    { STRING, 's', "save", &save, 1 },
-    { INT, 'c', "count", &count, 1 },
-    { BOOLEAN, '\0', "dry-run", &dry, 0 },
-    { END, '\0', NULL, NULL, 0 }
-  };
-
-  parse_args(argc, argv, opts);
-
-  printf("Parsed args: print: %d, count: %d, dry: %d, save: %s\n", print, count,
-         dry, save);
-}
 
 int is_alpha(char c) {
   return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
@@ -120,9 +101,11 @@ void parse_long_opt(args *args, arg_opt *opts) {
 int parse_args(int argc, char *argv[], arg_opt *opts) {
   args args = { 0, argc - 1, argv + 1 };
 
-  while (args.pos<args.argc) {
+  while (args.pos < args.argc) {
     const char *arg = args.argv[args.pos];
+    int len = strlen(arg);
 
+    if (len < 2) continue;
     if (arg[0] == '-' && arg[1] == '-')
       parse_long_opt(&args, opts);
     if (arg[0] == '-' && is_alpha(arg[1]))

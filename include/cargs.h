@@ -1,5 +1,5 @@
-#if !defined(C_ARGS_H)
-#define C_ARGS_H
+#if !defined(CARGS_H)
+#define CARGS_H
 
 typedef enum {
   END,
