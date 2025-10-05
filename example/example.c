@@ -1,4 +1,4 @@
-#include "cargs.h"
+#include "../include/cargs.h"
 #include <stdio.h>
 
 int main(int argc, char *argv[]) {
