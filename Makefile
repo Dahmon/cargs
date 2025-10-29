@@ -7,7 +7,7 @@ BUILD   = bin
 INCLUDE = include
 PREFIX  = /usr/local
 
-.PHONY: all example install uninstall clean
+.PHONY: all example test install uninstall clean
 
 all: $(BUILD)/libcargs.a
 
@@ -25,6 +25,9 @@ example: $(BUILD)/example.o $(BUILD)/libcargs.a
 
 $(BUILD)/example.o: example/example.c include/cargs.h | $(BUILD)
 	$(CC) $(CFLAGS) -c -o $@ example/example.c
+
+test: example
+	./test/test.sh
 
 install: $(BUILD)/libcargs.a $(INCLUDE)/cargs.h
 	install -d $(PREFIX)/lib

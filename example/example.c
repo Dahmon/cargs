@@ -15,6 +15,6 @@ int main(int argc, char *argv[]) {
 
   parse_args(argc, argv, opts);
 
-  printf("Parsed args: print: %d, count: %d, dry: %d, save: %s\n", print, count,
+  printf("print: %d, count: %d, dry: %d, save: %s\n", print, count,
          dry, save);
 }
