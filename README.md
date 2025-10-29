@@ -9,6 +9,9 @@ This was created as a learning exercise, using [`argparse`](https://github.com/c
 
 - [x] Basic arguments parsing
 - [ ] Help/usage messages
+- [ ] Accept nameless ending argument
+- [ ] Compound options (`-ab` instead of `-a -b`)
+- [ ] Tests
 
 ## Example
 
