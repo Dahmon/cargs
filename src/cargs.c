@@ -9,7 +9,7 @@ int is_alpha(char c) {
 }
 
 int is_opt(char *arg) {
-  return arg[0] == '-' || arg[0] == '-' || arg[1] == '-';
+  return arg[0] == '-';
 }
 
 void get_value(args *args, arg_opt *opt) {
@@ -103,12 +103,10 @@ int parse_args(int argc, char *argv[], arg_opt *opts) {
 
   while (args.pos < args.argc) {
     const char *arg = args.argv[args.pos];
-    int len = strlen(arg);
 
-    if (len < 2) continue;
     if (arg[0] == '-' && arg[1] == '-')
       parse_long_opt(&args, opts);
-    if (arg[0] == '-' && is_alpha(arg[1]))
+    else if (arg[0] == '-' && is_alpha(arg[1]))
       parse_short_opt(&args, opts);
 
     args.pos++;
